@@ -5,7 +5,7 @@ defmodule HelloWeb.PageController do
     render(conn, :home)
   end
 
-  def test(conn, _params) do
-    render(conn, :test)
+  def order(conn, _params) do
+    render(conn, :order)
   end
 end

@@ -16,3 +16,13 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 * Docs: https://hexdocs.pm/phoenix
 * Forum: https://elixirforum.com/c/phoenix-forum
 * Source: https://github.com/phoenixframework/phoenix
+
+
+## installed vscode extension
+
+* Container Tools       - Microsoft
+* ElixirLS              - ElixirLS
+* erlang                - Pierrick Gourlain
+* HTML Preview          - Analyctic Signal
+* Live Preview          - Microsoft
+* Phoenix Framework     - Phoenixframework
