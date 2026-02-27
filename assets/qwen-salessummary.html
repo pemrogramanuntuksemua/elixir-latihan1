@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Sales Summary</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            padding-top: 50px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+    <!-- NAVIGATION BAR (Same as previous request) -->
+    <nav class="fixed top-0 left-0 w-full h-12 bg-white border-b border-gray-200 shadow-sm z-50 flex justify-between items-center px-2">
+        
+        <!-- 1. HOME / LOGO -->
+        <a href="#" class="flex-shrink-0 flex items-center gap-1 text-blue-600 font-bold text-lg mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+        </a>
+
+        <!-- MIDDLE SECTION (Stats) -->
+        <div class="flex-1 flex items-center gap-4 overflow-x-auto no-scrollbar px-2">
+            
+            <!-- Qty Order Today -->
+            <div class="flex flex-col items-center justify-center flex-shrink-0">
+                <span class="text-[9px] text-gray-400 uppercase">Today</span>
+                <span class="text-xs font-bold text-gray-800">142</span>
+            </div>
+
+            <!-- Qty Order Done -->
+            <div class="flex flex-col items-center justify-center flex-shrink-0 border-l border-gray-200 pl-4">
+                <span class="text-[9px] text-gray-400 uppercase">Done</span>
+                <span class="text-xs font-bold text-green-600">98</span>
+            </div>
+
+            <!-- Qty On Progress -->
+            <div class="flex flex-col items-center justify-center flex-shrink-0 border-l border-gray-200 pl-4">
+                <span class="text-[9px] text-gray-400 uppercase">Prog</span>
+                <span class="text-xs font-bold text-orange-500">44</span>
+            </div>
+
+            <!-- Timer -->
+            <div class="flex items-center gap-1 flex-shrink-0 border-l border-gray-200 pl-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-xs font-mono font-bold text-gray-700">04:12:30</span>
+            </div>
+        </div>
+
+        <!-- Date / Time -->
+        <div class="flex-shrink-0 flex flex-col items-end justify-center border-l border-gray-200 pl-3 ml-1">
+            <span class="text-[9px] text-gray-500 leading-none">Oct 24</span>
+            <span class="text-[10px] font-bold text-gray-800 leading-none">14:30</span>
+        </div>
+
+    </nav>
+
+    <!-- SALES SUMMARY CONTENT -->
+    <main class="p-3 max-w-lg mx-auto space-y-4">
+        
+        <!-- Overall Sales Summary Card -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-xl shadow-md">
+            <h2 class="text-sm font-medium opacity-90 mb-1">Today's Total Sales</h2>
+            <div class="flex justify-between items-end">
+                <div>
+                    <p class="text-3xl font-bold">$2,847.50</p>
+                    <p class="text-xs opacity-75 mt-1">142 orders completed</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs opacity-75">Food</p>
+                    <p class="font-semibold">$1,923.00</p>
+                    <p class="text-xs opacity-75 mt-2">Drinks</p>
+                    <p class="font-semibold">$924.50</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOD SECTION -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-orange-50 px-4 py-3 border-b border-orange-100 flex justify-between items-center">
+                <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Food Items
+                </h3>
+                <span class="text-xs font-semibold text-orange-600 bg-orange-100 px-2 py-0.5 rounded">8 Items</span>
+            </div>
+            
+            <div class="divide-y divide-gray-100">
+                <!-- Food Item 1 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Beef Burger</p>
+                        <p class="text-xs text-gray-500">Qty: 24 × $12.50</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$300.00</p>
+                </div>
+
+                <!-- Food Item 2 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Caesar Salad</p>
+                        <p class="text-xs text-gray-500">Qty: 18 × $8.00</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$144.00</p>
+                </div>
+
+                <!-- Food Item 3 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Chicken Pasta</p>
+                        <p class="text-xs text-gray-500">Qty: 32 × $14.00</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$448.00</p>
+                </div>
+
+                <!-- Food Item 4 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Fish & Chips</p>
+                        <p class="text-xs text-gray-500">Qty: 15 × $16.00</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$240.00</p>
+                </div>
+
+                <!-- Food Item 5 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Margherita Pizza</p>
+                        <p class="text-xs text-gray-500">Qty: 28 × $15.00</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$420.00</p>
+                </div>
+
+                <!-- Food Item 6 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Steak Medium</p>
+                        <p class="text-xs text-gray-500">Qty: 12 × $28.00</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$336.00</p>
+                </div>
+
+                <!-- Food Item 7 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Veggie Wrap</p>
+                        <p class="text-xs text-gray-500">Qty: 10 × $9.50</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$95.00</p>
+                </div>
+
+                <!-- Food Subtotal -->
+                <div class="px-4 py-3 bg-orange-50 flex justify-between items-center">
+                    <p class="text-sm font-semibold text-orange-700">Food Subtotal</p>
+                    <p class="font-bold text-sm text-orange-700">$1,983.00</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DRINKS SECTION -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-blue-50 px-4 py-3 border-b border-blue-100 flex justify-between items-center">
+                <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                    Drink Items
+                </h3>
+                <span class="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-0.5 rounded">6 Items</span>
+            </div>
+            
+            <div class="divide-y divide-gray-100">
+                <!-- Drink Item 1 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Cappuccino</p>
+                        <p class="text-xs text-gray-500">Qty: 45 × $4.50</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$202.50</p>
+                </div>
+
+                <!-- Drink Item 2 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Coca Cola</p>
+                        <p class="text-xs text-gray-500">Qty: 38 × $3.00</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$114.00</p>
+                </div>
+
+                <!-- Drink Item 3 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Fresh Orange Juice</p>
+                        <p class="text-xs text-gray-500">Qty: 22 × $5.50</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$121.00</p>
+                </div>
+
+                <!-- Drink Item 4 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Iced Latte</p>
+                        <p class="text-xs text-gray-500">Qty: 30 × $5.00</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$150.00</p>
+                </div>
+
+                <!-- Drink Item 5 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Lemonade</p>
+                        <p class="text-xs text-gray-500">Qty: 25 × $4.00</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$100.00</p>
+                </div>
+
+                <!-- Drink Item 6 -->
+                <div class="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-gray-800">Mineral Water</p>
+                        <p class="text-xs text-gray-500">Qty: 52 × $2.00</p>
+                    </div>
+                    <p class="font-bold text-sm text-gray-800">$104.00</p>
+                </div>
+
+                <!-- Drinks Subtotal -->
+                <div class="px-4 py-3 bg-blue-50 flex justify-between items-center">
+                    <p class="text-sm font-semibold text-blue-700">Drinks Subtotal</p>
+                    <p class="font-bold text-sm text-blue-700">$791.50</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grand Total -->
+        <div class="bg-gray-800 text-white p-4 rounded-xl shadow-md">
+            <div class="flex justify-between items-center">
+                <p class="text-sm font-medium opacity-75">Grand Total (14 Items)</p>
+                <p class="text-xl font-bold">$2,774.50</p>
+            </div>
+        </div>
+
+        <div class="h-10"></div>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Taker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            padding-top: 50px;
+        }
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+        /* Smooth collapse transition */
+        .collapse-content {
+            transition: all 0.3s ease-in-out;
+            overflow: hidden;
+        }
+        .collapse-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            padding: 0;
+        }
+        .collapse-content.expanded {
+            max-height: 500px;
+            opacity: 1;
+            padding: 0;
+        }
+        /* Item list scrollable area */
+        .item-list {
+            height: calc(100vh - 50px);
+            overflow-y: auto;
+            transition: padding-top 0.3s ease-in-out;
+        }
+        .item-list.minimized {
+            padding-top: 180px;
+        }
+        .item-list.expanded {
+            padding-top: 340px;
+        }
+        /* Toggle button rotation */
+        .toggle-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+        .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+    <!-- OVERLAY (Background dimmer) -->
+    <div id="menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity opacity-0"></div>
+
+    <!-- SIDEBAR MENU (Dark Vertical Menu) -->
+    <div id="sidebar-menu" class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white z-50 transform -translate-x-full sidebar-transition shadow-xl">
+        <!-- Menu Header -->
+        <div class="h-12 flex items-center justify-between px-4 border-b border-gray-700">
+            <span class="font-bold text-lg">Menu</span>
+            <button id="close-menu-btn" class="text-gray-400 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Menu Items -->
+        <div class="p-4 space-y-2">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition border-l-4 border-transparent hover:border-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <span class="font-medium">Order List</span>
+            </a>
+
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition border-l-4 border-transparent hover:border-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span class="font-medium">Order Summary</span>
+            </a>
+
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition border-l-4 border-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span class="font-medium">Take an Order</span>
+            </a>
+
+            <div class="border-t border-gray-700 my-4"></div>
+
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-900 hover:text-red-100 transition border-l-4 border-transparent hover:border-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span class="font-medium">Logout</span>
+            </a>
+        </div>
+        
+        <!-- User Info at Bottom -->
+        <div class="absolute bottom-0 w-full p-4 border-t border-gray-700 bg-gray-800">
+            <p class="text-xs text-gray-400">Logged in as</p>
+            <p class="text-sm font-bold text-white">Admin User</p>
+        </div>
+    </div>
+
+    <!-- NAVIGATION BAR -->
+    <nav class="fixed top-0 left-0 w-full h-12 bg-white border-b border-gray-200 shadow-sm z-30 flex justify-between items-center px-2">
+        
+        <!-- LEFT SECTION: Hamburger + Logo -->
+        <div class="flex-shrink-0 flex items-center gap-2 mr-2">
+            <!-- HAMBURGER BUTTON -->
+            <button id="open-menu-btn" class="p-1 rounded-md text-gray-600 hover:text-blue-600 hover:bg-gray-100 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
+            <!-- HOME / LOGO -->
+            <a href="#" class="flex items-center gap-1 text-blue-600 font-bold text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+            </a>
+        </div>
+
+        <!-- MIDDLE SECTION (Stats) -->
+        <div class="flex-1 flex items-center gap-4 overflow-x-auto no-scrollbar px-2">
+            
+            <!-- Qty Order Today -->
+            <div class="flex flex-col items-center justify-center flex-shrink-0">
+                <span class="text-[9px] text-gray-400 uppercase">Today</span>
+                <span class="text-xs font-bold text-gray-800">142</span>
+            </div>
+
+            <!-- Qty Order Done -->
+            <div class="flex flex-col items-center justify-center flex-shrink-0 border-l border-gray-200 pl-4">
+                <span class="text-[9px] text-gray-400 uppercase">Done</span>
+                <span class="text-xs font-bold text-green-600">98</span>
+            </div>
+
+            <!-- Qty On Progress -->
+            <div class="flex flex-col items-center justify-center flex-shrink-0 border-l border-gray-200 pl-4">
+                <span class="text-[9px] text-gray-400 uppercase">Prog</span>
+                <span class="text-xs font-bold text-orange-500">44</span>
+            </div>
+
+            <!-- Timer -->
+            <div class="flex items-center gap-1 flex-shrink-0 border-l border-gray-200 pl-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-xs font-mono font-bold text-gray-700">04:12:30</span>
+            </div>
+        </div>
+
+        <!-- RIGHT SECTION: Date / Time -->
+        <div class="flex-shrink-0 flex flex-col items-end justify-center border-l border-gray-200 pl-3 ml-1">
+            <span class="text-[9px] text-gray-500 leading-none">Oct 24</span>
+            <span class="text-[10px] font-bold text-gray-800 leading-none">14:30</span>
+        </div>
+
+    </nav>
+
+    <!-- ORDER INPUT SECTION (Fixed, Collapsible) -->
+    <div class="fixed top-12 left-0 w-full bg-white border-b border-gray-200 z-20 shadow-sm">
+        <div class="p-3 max-w-lg mx-auto">
+            
+            <!-- Header with Toggle Button -->
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    New Order
+                </h3>
+                <button id="toggle-input-section" class="text-gray-500 hover:text-blue-600 transition">
+                    <svg id="toggle-icon" class="h-5 w-5 toggle-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Customer Name (Always Visible) -->
+            <div class="mb-2">
+                <label class="block text-[10px] text-gray-500 uppercase mb-1">Customer Name</label>
+                <input type="text" placeholder="John Doe" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Collapsible Additional Fields -->
+            <div id="collapse-content" class="collapse-content expanded">
+                <div class="grid grid-cols-2 gap-2">
+                    <!-- Desk Number -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-[10px] text-gray-500 uppercase mb-1">Desk Number</label>
+                        <input type="text" placeholder="Table 5" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons (Always Visible) -->
+            <div class="flex gap-2 mt-3">                
+                <!-- Add to Order Button -->
+                <button class="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Confirm Order
+                </button>
+            </div>
+
+            <!-- Current Order Summary (Always Visible) -->
+            <div class="mt-3 p-3 bg-gray-100 rounded-lg">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-semibold text-gray-600">Current Order</span>
+                    <span class="text-xs text-gray-500">3 items</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-bold text-gray-800">Total</span>
+                    <span class="text-lg font-bold text-blue-600">$47.50</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ITEM LIST SECTION (Scrollable) -->
+    <div id="item-list" class="item-list expanded pb-4">
+        <div class="max-w-lg mx-auto px-3">
+        
+            <!-- Section Header -->
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-lg font-bold text-gray-800">Menu Items</h2>
+                <div class="flex gap-2">
+                    <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded-full font-semibold">All</button>
+                    <button class="px-3 py-1 bg-white text-gray-600 border border-gray-200 text-xs rounded-full font-semibold">Food</button>
+                    <button class="px-3 py-1 bg-white text-gray-600 border border-gray-200 text-xs rounded-full font-semibold">Drinks</button>
+                </div>
+            </div>
+
+            <!-- FOOD ITEMS -->
+            <div class="mb-4">
+                <h3 class="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Food
+                </h3>
+                <div class="space-y-3">
+                    <!-- Item 1 -->
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-100 flex gap-3">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100&h=100&fit=crop" alt="Beef Burger" class="w-20 h-20 object-cover rounded-lg">
+                        <div class="flex flex-1 justify-between">
+                            <div class="w-[70%]">
+                                <h4 class="font-semibold text-sm text-gray-800">Beef Burger</h4>
+                                <p class="text-xs text-gray-500">Juicy beef patty with cheese</p>
+                                <div class="flex gap-1">
+                                    <span class="flex-1 py-1.5 rounded-lg text-xs font-semibold transition flex items-left  gap-1">
+                                        - 1 no salad <br/>
+                                        - 1 no onions <br/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="w-[30%]">
+                                <div class="flex-1 justify-between items-center">
+                                    <span class="text-sm font-bold text-gray-800">
+                                        <span>2 x $12.5</span>
+                                        <span class="text-2xl text-right">$25.00</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-100 flex gap-3">
+                        <img src="https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=100&h=100&fit=crop" alt="Caesar Salad" class="w-20 h-20 object-cover rounded-lg">
+                        <div class="flex-1 flex justify-between">
+                            <div class="w-[70%]">
+                                <h4 class="font-semibold text-sm text-gray-800">Caesar Salad</h4>
+                                <p class="text-xs text-gray-500">Fresh romaine with parmesan</p>
+                                <div class="flex gap-1">
+                                    <span class="flex-1 py-1.5 rounded-lg text-xs font-semibold transition flex items-left  gap-1">
+                                        - comment 1 <br/>
+                                        - comment 2 <br/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="w-[30%]">
+                                <div class="flex-1 justify-between items-center">
+                                    <span class="text-sm font-bold text-gray-800">
+                                        <span>2 x $15</span>
+                                        <span class="text-2xl text-right">$20.00</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DRINKS ITEMS -->
+            <div class="mb-4">
+                <h3 class="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                    Drinks
+                </h3>
+                <div class="space-y-3">
+                    <!-- Drink Item 1 -->
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-100 flex gap-3">
+                        <img src="https://images.unsplash.com/photo-1572449043416-55f4685c9bb7?w=100&h=100&fit=crop" alt="Cappuccino" class="w-20 h-20 object-cover rounded-lg">                        
+                        <div class="flex-1 flex justify-between">
+                            <div class="w-[70%]">
+                                <h4 class="font-semibold text-sm text-gray-800">Cappuccino</h4>
+                                <p class="text-xs text-gray-500">Espresso with steamed milk</p>
+                                <div class="flex gap-1">
+                                    <span class="flex-1 py-1.5 rounded-lg text-xs font-semibold transition flex items-left  gap-1">
+                                        - comment 1 <br/>
+                                        - comment 2 <br/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="w-[30%]">
+                                <div class="flex-1 justify-between items-center">
+                                    <span class="text-sm font-bold text-gray-800">
+                                        <span>2 x $4.5</span>
+                                        <span class="text-2xl text-right">$9.00</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Spacer -->
+            <div class="h-20"></div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT FOR MENU TOGGLE & INPUT SECTION TOGGLE -->
+    <script>
+        // Sidebar Menu Toggle
+        const menuBtn = document.getElementById('open-menu-btn');
+        const closeBtn = document.getElementById('close-menu-btn');
+        const sidebar = document.getElementById('sidebar-menu');
+        const overlay = document.getElementById('menu-overlay');
+
+        function openMenu() {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+            }, 10);
+        }
+
+        function closeMenu() {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 300);
+        }
+
+        menuBtn.addEventListener('click', openMenu);
+        closeBtn.addEventListener('click', closeMenu);
+        overlay.addEventListener('click', closeMenu);
+
+        // Input Section Collapse Toggle
+        const toggleBtn = document.getElementById('toggle-input-section');
+        const toggleIcon = document.getElementById('toggle-icon');
+        const collapseContent = document.getElementById('collapse-content');
+        const itemList = document.getElementById('item-list');
+        let isExpanded = true;
+
+        toggleBtn.addEventListener('click', function() {
+            isExpanded = !isExpanded;
+            
+            if (isExpanded) {
+                // Expand
+                collapseContent.classList.remove('collapsed');
+                collapseContent.classList.add('expanded');
+                itemList.classList.remove('minimized');
+                itemList.classList.add('expanded');
+                toggleIcon.classList.add('rotated');
+            } else {
+                // Minimize
+                collapseContent.classList.remove('expanded');
+                collapseContent.classList.add('collapsed');
+                itemList.classList.remove('expanded');
+                itemList.classList.add('minimized');
+                toggleIcon.classList.remove('rotated');
+            }
+        });
+    </script>
+
+</body>
+</html>
