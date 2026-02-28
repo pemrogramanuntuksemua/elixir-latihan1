@@ -81,3 +81,56 @@ if (process.env.NODE_ENV === "development") {
   })
 }
 
+// JAVASCRIPT FOR MENU TOGGLE & INPUT SECTION TOGGLE
+// Sidebar Menu Toggle
+const menuBtn = document.getElementById('open-menu-btn');
+const closeBtn = document.getElementById('close-menu-btn');
+const sidebar = document.getElementById('sidebar-menu');
+const overlay = document.getElementById('menu-overlay');
+
+function openMenu() {
+    sidebar.classList.remove('-translate-x-full');
+    overlay.classList.remove('hidden');
+    setTimeout(() => {
+        overlay.classList.remove('opacity-0');
+    }, 10);
+}
+
+function closeMenu() {
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('opacity-0');
+    setTimeout(() => {
+        overlay.classList.add('hidden');
+    }, 300);
+}
+
+menuBtn.addEventListener('click', openMenu);
+closeBtn.addEventListener('click', closeMenu);
+overlay.addEventListener('click', closeMenu);
+
+// Input Section Collapse Toggle
+const toggleBtn = document.getElementById('toggle-input-section');
+const toggleIcon = document.getElementById('toggle-icon');
+const collapseContent = document.getElementById('collapse-content');
+const itemList = document.getElementById('item-list');
+let isExpanded = true;
+
+toggleBtn.addEventListener('click', function() {
+    isExpanded = !isExpanded;
+
+    if (isExpanded) {
+        // Expand
+        collapseContent.classList.remove('collapsed');
+        collapseContent.classList.add('expanded');
+        itemList.classList.remove('minimized');
+        itemList.classList.add('expanded');
+        toggleIcon.classList.add('rotated');
+    } else {
+        // Minimize
+        collapseContent.classList.remove('expanded');
+        collapseContent.classList.add('collapsed');
+        itemList.classList.remove('expanded');
+        itemList.classList.add('minimized');
+        toggleIcon.classList.remove('rotated');
+    }
+});
