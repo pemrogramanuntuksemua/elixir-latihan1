@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title default="Mobile" suffix=" · Phoenix Framework">
+      {assigns[:page_title]}
+    </.live_title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            padding-top: 50px;
+        }
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+        /* Smooth collapse transition */
+        .collapse-content {
+            transition: all 0.3s ease-in-out;
+            overflow: hidden;
+        }
+        .collapse-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            padding: 0;
+        }
+        .collapse-content.expanded {
+            max-height: 500px;
+            opacity: 1;
+            padding: 0;
+        }
+        /* Item list scrollable area */
+        .item-list {
+            height: calc(100vh - 50px);
+            overflow-y: auto;
+            transition: padding-top 0.3s ease-in-out;
+        }
+        .item-list.minimized {
+            padding-top: 180px;
+        }
+        .item-list.expanded {
+            padding-top: 340px;
+        }
+        /* Toggle button rotation */
+        .toggle-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+        .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+    <!-- OVERLAY (Background dimmer) -->
+    <div id="menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity opacity-0"></div>
+
+    <!-- SIDEBAR MENU (Dark Vertical Menu) -->
+    <div id="sidebar-menu" class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white z-50 transform -translate-x-full sidebar-transition shadow-xl">
+        <!-- Menu Header -->
+        <div class="h-12 flex items-center justify-between px-4 border-b border-gray-700">
+            <span class="font-bold text-lg">Menu</span>
+            <button id="close-menu-btn" class="text-gray-400 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Menu Items -->
+        <div class="p-4 space-y-2">
+            <a href="/order-list" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition border-l-4 border-transparent hover:border-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <span class="font-medium">Order List</span>
+            </a>
+
+            <a href="/order-summary" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition border-l-4 border-transparent hover:border-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span class="font-medium">Order Summary</span>
+            </a>
+
+            <a href="/order-new" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition border-l-4 border-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span class="font-medium">Take an Order</span>
+            </a>
+
+            <div class="border-t border-gray-700 my-4"></div>
+
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-900 hover:text-red-100 transition border-l-4 border-transparent hover:border-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span class="font-medium">Logout</span>
+            </a>
+        </div>
+
+        <!-- User Info at Bottom -->
+        <div class="absolute bottom-0 w-full p-4 border-t border-gray-700 bg-gray-800">
+            <p class="text-xs text-gray-400">Logged in as</p>
+            <p class="text-sm font-bold text-white">Admin User</p>
+        </div>
+    </div>
+
+    <!-- NAVIGATION BAR -->
+    <nav class="fixed top-0 left-0 w-full h-12 bg-white border-b border-gray-200 shadow-sm z-30 flex justify-between items-center px-2">
+
+        <!-- LEFT SECTION: Hamburger + Logo -->
+        <div class="flex-shrink-0 flex items-center gap-2 mr-2">
+            <!-- HAMBURGER BUTTON -->
+            <button id="open-menu-btn" class="p-1 rounded-md text-gray-600 hover:text-blue-600 hover:bg-gray-100 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
+            <!-- HOME / LOGO -->
+            <a href="#" class="flex items-center gap-1 text-blue-600 font-bold text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+            </a>
+        </div>
+
+        <!-- MIDDLE SECTION (Stats) -->
+        <div class="flex-1 flex items-center gap-4 overflow-x-auto no-scrollbar px-2">
+
+            <!-- Qty Order Today -->
+            <div class="flex flex-col items-center justify-center flex-shrink-0">
+                <span class="text-[9px] text-gray-400 uppercase">Today</span>
+                <span class="text-xs font-bold text-gray-800">142</span>
+            </div>
+
+            <!-- Qty Order Done -->
+            <div class="flex flex-col items-center justify-center flex-shrink-0 border-l border-gray-200 pl-4">
+                <span class="text-[9px] text-gray-400 uppercase">Done</span>
+                <span class="text-xs font-bold text-green-600">98</span>
+            </div>
+
+            <!-- Qty On Progress -->
+            <div class="flex flex-col items-center justify-center flex-shrink-0 border-l border-gray-200 pl-4">
+                <span class="text-[9px] text-gray-400 uppercase">Prog</span>
+                <span class="text-xs font-bold text-orange-500">44</span>
+            </div>
+
+            <!-- Timer -->
+            <div class="flex items-center gap-1 flex-shrink-0 border-l border-gray-200 pl-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-xs font-mono font-bold text-gray-700">04:12:30</span>
+            </div>
+        </div>
+
+        <!-- RIGHT SECTION: Date / Time -->
+        <div class="flex-shrink-0 flex flex-col items-end justify-center border-l border-gray-200 pl-3 ml-1">
+            <span class="text-[9px] text-gray-500 leading-none">Oct 24</span>
+            <span class="text-[10px] font-bold text-gray-800 leading-none">14:30</span>
+        </div>
+
+    </nav>
+
+    {@inner_content}
+
+    <!-- JAVASCRIPT FOR MENU TOGGLE & INPUT SECTION TOGGLE -->
+    <script>
+        // Sidebar Menu Toggle
+        const menuBtn = document.getElementById('open-menu-btn');
+        const closeBtn = document.getElementById('close-menu-btn');
+        const sidebar = document.getElementById('sidebar-menu');
+        const overlay = document.getElementById('menu-overlay');
+
+        function openMenu() {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+            }, 10);
+        }
+
+        function closeMenu() {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 300);
+        }
+
+        menuBtn.addEventListener('click', openMenu);
+        closeBtn.addEventListener('click', closeMenu);
+        overlay.addEventListener('click', closeMenu);
+
+        // Input Section Collapse Toggle
+        const toggleBtn = document.getElementById('toggle-input-section');
+        const toggleIcon = document.getElementById('toggle-icon');
+        const collapseContent = document.getElementById('collapse-content');
+        const itemList = document.getElementById('item-list');
+        let isExpanded = true;
+
+        toggleBtn.addEventListener('click', function() {
+            isExpanded = !isExpanded;
+
+            if (isExpanded) {
+                // Expand
+                collapseContent.classList.remove('collapsed');
+                collapseContent.classList.add('expanded');
+                itemList.classList.remove('minimized');
+                itemList.classList.add('expanded');
+                toggleIcon.classList.add('rotated');
+            } else {
+                // Minimize
+                collapseContent.classList.remove('expanded');
+                collapseContent.classList.add('collapsed');
+                itemList.classList.remove('expanded');
+                itemList.classList.add('minimized');
+                toggleIcon.classList.remove('rotated');
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -20,6 +20,10 @@ defmodule HelloWeb.Router do
     get "/", PageController, :home
     get "/order", PageController, :order
 
+    get "/order-new", OrderController, :order_new
+    get "/order-list", OrderController, :order_list
+    get "/order-summary", OrderController, :order_summary
+
     live "/posts", PostLive.Index, :index
     live "/posts/new", PostLive.Form, :new
     live "/posts/:id", PostLive.Show, :show
